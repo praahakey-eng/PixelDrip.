@@ -1,0 +1,25 @@
+name: PixelDrip-AutoUpdate
+on:
+  push:
+    paths:
+      - 'Wallpaper/**'
+jobs:
+  update-list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Image List
+        run: |
+          echo "[" > data.json
+          find Wallpaper -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" \) | while read f; do
+            echo "{\"url\":\"$f\"}," >> data.json
+          done
+          sed -i '$ s/,$//' data.json
+          echo "]" >> data.json
+      - name: Save Changes
+        run: |
+          git config --global user.name "PixelBot"
+          git config --global user.email "bot@pixeldrip.com"
+          git add data.json
+          git commit -m "New wallpaper added" || exit 0
+          git push
