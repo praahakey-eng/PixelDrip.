@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelDrip | Premium Wallpapers</title>
+    <style>
+        :root { --accent: #00f2fe; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; text-align: center; }
+        
+        header { padding: 60px 20px; background: linear-gradient(180deg, #1a1a1a 0%, var(--bg) 100%); border-bottom: 1px solid #222; }
+        h1 { font-size: 3.5rem; margin: 0; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -2px; text-transform: uppercase; }
+        p { color: #888; margin-top: 10px; font-size: 1rem; }
+
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding: 30px; max-width: 1300px; margin: 0 auto; }
+        .card { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid #333; transition: 0.4s; position: relative; }
+        .card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0, 242, 254, 0.2); }
+        .card img { width: 100%; height: 450px; object-fit: cover; display: block; }
+        
+        .btn-box { padding: 20px; background: rgba(0,0,0,0.5); }
+        .dl-btn { background: var(--accent); color: #000; padding: 12px 0; border-radius: 12px; text-decoration: none; font-weight: bold; display: block; width: 100%; transition: 0.3s; }
+        .dl-btn:hover { background: white; }
+
+        /* No images message */
+        #empty-msg { grid-column: 1 / -1; color: #555; padding: 50px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PixelDrip</h1>
+        <p>Premium Wallpapers • High Quality • Daily Updates</p>
+    </header>
+
+    <div class="gallery" id="wallpaper-grid">
+        <p id="empty-msg">Loading Wallpapers...</p>
+    </div>
+
+    <script>
+        async function fetchWallpapers() {
+            const grid = document.getElementById('wallpaper-grid');
+            try {
+                // Yeh file GitHub Action apne aap banayega
+                const response = await fetch('data.json');
+                const images = await response.json();
+                
+                if(images.length > 0) {
+                    grid.innerHTML = ''; // Loading text hatao
+                    // Newest photos ko pehle dikhane ke liye reverse karenge
+                    images.reverse().forEach(img => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <img src="${img.url}" alt="Wallpaper">
+                            <div class="btn-box">
+                                <a href="${img.url}" download class="dl-btn">DOWNLOAD</a>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = '<p id="empty-msg">No wallpapers found. Add photos to the wallpapers folder!</p>';
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                grid.innerHTML = '<p id="empty-msg">Upload your first photo to the "wallpapers" folder to start.</p>';
+            }
+        }
+        fetchWallpapers();
+    </script>
+</body>
+</html>
