@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelDrip | Premium Wallpapers</title>
+    <style>
+        :root { --accent: #00f2fe; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; text-align: center; }
+        
+        header { padding: 60px 20px; background: linear-gradient(180deg, #1a1a1a 0%, var(--bg) 100%); border-bottom: 1px solid #222; }
+        h1 { font-size: 3rem; margin: 0; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: -1px; }
+        p { color: #888; margin-top: 10px; font-size: 0.9rem; }
+
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 25px; max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card img { width: 100%; height: 400px; object-fit: cover; display: block; }
+        
+        .btn-box { padding: 15px; }
+        .dl-btn { background: var(--accent); color: #000; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display: block; }
+
+        #empty-msg { grid-column: 1 / -1; color: #444; padding: 50px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PixelDrip</h1>
+        <p>Premium Wallpapers • Daily Updates</p>
+    </header>
+
+    <div class="gallery" id="wallpaper-grid">
+        <p id="empty-msg">Loading your awesome collection...</p>
+    </div>
+
+    <script>
+        async function loadWallpapers() {
+            const grid = document.getElementById('wallpaper-grid');
+            try {
+                // data.json ko fetch karega jo GitHub Action ne banayi hai
+                const response = await fetch('data.json');
+                const images = await response.json();
+                
+                if(images && images.length > 0) {
+                    grid.innerHTML = ''; 
+                    images.reverse().forEach(img => {
+                        grid.innerHTML += `
+                            <div class="card">
+                                <img src="${img.url}" loading="lazy">
+                                <div class="btn-box">
+                                    <a href="${img.url}" download class="dl-btn">DOWNLOAD</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    grid.innerHTML = '<p id="empty-msg">No wallpapers found. Add photos to the "Wallpaper" folder!</p>';
+                }
+            } catch (e) {
+                grid.innerHTML = '<p id="empty-msg">Upload your first photo to start the magic!</p>';
+            }
+        }
+        loadWallpapers();
+    </script>
+</body>
+</html>
